@@ -1,6 +1,3 @@
---MWLL = require("MWLLib")
---require "MWLLib.lua"
-
 function Toggle(keyinput, key, bool) --keyinput: the key that's actually getting pressed, key: the key that's checked for, bool: the bool that's toggled; example: TheBool = Toggle(k, 'q', TheBool)
     if keyinput == key and not bool then
         return true
@@ -8,6 +5,19 @@ function Toggle(keyinput, key, bool) --keyinput: the key that's actually getting
         return false
     end
 end
+
+
+
+function PausePlay(keyinput, key, sourceTable)  --keyinput: the key that's actually getting pressed, key: the number that's checked for, sourceTable: the table of sources that gets pulled from to pause/play; example: PausePlay(k, 1, MusicTable)
+    if keyinput == key and not sourceTable[key]:isPlaying() then
+        love.audio.play(sourceTable[key])
+    elseif keyinput == key and sourceTable[key]:isPlaying() then
+        sourceTable[key]:pause()
+    end
+end
+
+
+
 
 function love.load()
     --HEY LOOK AT THIS
@@ -24,12 +34,20 @@ function love.load()
 
     Paths1 = {'Level1/disc_cyberwave.ogg', 'Level1/Final Destination SSBB Remix.mp3', 'Level1/Murder Drones - Click(CaliberKat Remix).mp3', 'Level1/disc_cyberwave.ogg', 'Level1/disc_cyberwave.ogg'}
 
+    Paths2 = {'Level2/Lamps.ogg', 'Level2/rain.ogg', 'Level2/TRANSMISSION_ERROR.ogg'}
+
+
     Musics1 = {love.audio.newSource(Paths1[1], 'stream'), love.audio.newSource(Paths1[2], 'stream'), love.audio.newSource(Paths1[3], 'stream'), love.audio.newSource(Paths1[4], 'stream'), love.audio.newSource(Paths1[5], 'stream')}
+
+    Musics2 = {love.audio.newSource(Paths2[1], 'stream'), love.audio.newSource(Paths2[2], 'stream'), love.audio.newSource(Paths2[3], 'stream')}
+
+
 
     Controls = {'escape', 'numbers(1-9)', 'P', 'S', 'T, Y, U, I', 'N', 'Z', 'X', 'C'}
     ControlsDesc = {': quit', ': play/pause song', ': pause all music', ': stop all music', ': music levels 1-4', ': set music level to none', ': increase volume', ': decrease volume', ': reset volume'}
 
-    --TheSource 
+
+
     Level1 = true
     Level2 = false
     Level3 = false
@@ -95,14 +113,27 @@ function love.draw()
     end
 
     --list songs
-    for i = 1, 5 do
-        love.graphics.print(i .. ': ' .. Paths1[i], 320, 70 + i * 20)
+    if Level1 then
+        for i = 1, #Paths1 do
+            love.graphics.print(i .. ': ' .. Paths1[i], 320, 70 + i * 20)
+        end
+    elseif Level2 then
+        for i = 1, #Paths2 do
+            love.graphics.print(i .. ': ' .. Paths2[i], 320, 70 + i * 20)
+        end
     end
 
     --list volumes
-    for i = 1, 5 do
-        local vol = Musics1[i]:getVolume()
-        love.graphics.print(Paths1[i] .. ' volume: ' .. vol, 20, 300 + i * 20)
+    if Level1 then
+        for i = 1, #Musics1 do
+            local vol = Musics1[i]:getVolume()
+            love.graphics.print(Paths1[i] .. ' volume: ' .. vol, 20, 300 + i * 20)
+        end
+    elseif Level2 then
+        for i = 1, #Musics2 do
+            local vol = Musics2[i]:getVolume()
+            love.graphics.print(Paths2[i] .. ' volume: ' .. vol, 20, 300 + i * 20)
+        end
     end
     --love.graphics.print('1: disc_cyberwave.ogg', 320, 40)
 
@@ -150,6 +181,11 @@ function love.keypressed(k)
 
 
     if Level1 and not Level2 and not Level3 and not Level4 then
+        --[[PausePlay(k, 1, Musics1)
+        PausePlay(k, 2, Musics1)
+        PausePlay(k, 3, Musics1)
+        PausePlay(k, 4, Musics1)
+        PausePlay(k, 5, Musics1)]]
         if k == '1' and not Musics1[1]:isPlaying() then
             love.audio.play(Musics1[1])
         elseif k == '1' and Musics1[1]:isPlaying() then
@@ -179,6 +215,42 @@ function love.keypressed(k)
         elseif k == '5' and Musics1[5]:isPlaying() then
             Musics1[5]:pause()
         end
+        
+        --[[local table = {'1', '2', '3', '4', '5'}
+        for i = 1, 5 do
+            if k == table[i] and not Musics1[i]:isPlaying() then
+                love.audio.play(Musics1[i])
+            elseif k == table[i] and Musics1[i]:isPlaying() then
+                Musics1[i]:pause()
+            end
+        end]]
+    elseif not Level1 and Level2 and not Level3 and not Level4 then
+        --[[PausePlay(k, 1, Musics2)
+        PausePlay(k, 2, Musics2)
+        PausePlay(k, 2, Musics2)]]
+        if k == '1' and not Musics2[1]:isPlaying() then
+            love.audio.play(Musics2[1])
+        elseif k == '1' and Musics2[1]:isPlaying() then
+            Musics2[1]:pause()
+        end
+
+        if k == '2' and not Musics2[2]:isPlaying() then
+            love.audio.play(Musics2[2])
+        elseif k == '2' and Musics2[2]:isPlaying() then
+            Musics2[2]:pause()
+        end
+
+        if k == '3' and not Musics2[3]:isPlaying() then
+            love.audio.play(Musics2[3])
+        elseif k == '3' and Musics2[3]:isPlaying() then
+            Musics2[3]:pause()
+        end
+
+        --[[if k == '4' and not Musics2[4]:isPlaying() then
+            love.audio.play(Musics2[4])
+        elseif k == '4' and Musics2[4]:isPlaying() then
+            Musics2[4]:pause()
+        end]]
     end
 
 
@@ -245,19 +317,37 @@ function love.keypressed(k)
         Level4 = false
     end
 
-    if k == 'z' --[[and Level1 and not Level2 and not Level3 and not Level4]] then
-        for i = 1, 5 do
-            local vol = Musics1[i]:getVolume()
-            Musics1[i]:setVolume(vol + 0.1)
+    if Level1 then
+        if k == 'z' then
+            for i = 1, #Musics1 do
+                local vol = Musics1[i]:getVolume()
+                Musics1[i]:setVolume(vol + 0.1)
+            end
+        elseif k == 'x' then
+            for i = 1, 5 do
+                local vol = Musics1[i]:getVolume()
+                Musics1[i]:setVolume(vol - 0.1)
+            end
+        elseif k == 'c' then
+            for i = 1, 5 do
+                Musics1[i]:setVolume(1)
+            end
         end
-    elseif k == 'x' --[[and Level1 and not Level2 and not Level3 and not Level4]] then
-        for i = 1, 5 do
-            local vol = Musics1[i]:getVolume()
-            Musics1[i]:setVolume(vol - 0.1)
-        end
-    elseif k == 'c' then
-        for i = 1, 5 do
-            Musics1[i]:setVolume(1)
+    elseif Level2 then
+        if k == 'z' then
+            for i = 1, #Musics2 do
+                local vol = Musics2[i]:getVolume()
+                Musics2[i]:setVolume(vol + 0.1)
+            end
+        elseif k == 'x' then
+            for i = 1, 5 do
+                local vol = Musics2[i]:getVolume()
+                Musics2[i]:setVolume(vol - 0.1)
+            end
+        elseif k == 'c' then
+            for i = 1, 5 do
+                Musics2[i]:setVolume(1)
+            end
         end
     end
 
