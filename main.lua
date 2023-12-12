@@ -1,29 +1,74 @@
+--MWLL = require("MWLLib")
+--require "MWLLib.lua"
+
+function Toggle(keyinput, key, bool) --keyinput: the key that's actually getting pressed, key: the key that's checked for, bool: the bool that's toggled; example: TheBool = Toggle(k, 'q', TheBool)
+    if keyinput == key and not bool then
+        return true
+    elseif keyinput == key and bool then
+        return false
+    end
+end
+
 function love.load()
     --init important stuff
     love.window.setTitle('Collaboration Music Player')
     local imageData = love.image.newImageData('Ligma.png')
     Success1 = love.window.setIcon(imageData)
+    SystemOS = love.system.getOS()
 
 
     Paths1 = {'Level1/disc_cyberwave.ogg', 'Level1/Final Destination SSBB Remix.mp3', 'Level1/Murder Drones - Click(CaliberKat Remix).mp3', 'Level1/disc_cyberwave.ogg', 'Level1/disc_cyberwave.ogg'}
 
     Musics1 = {love.audio.newSource(Paths1[1], 'stream'), love.audio.newSource(Paths1[2], 'stream'), love.audio.newSource(Paths1[3], 'stream'), love.audio.newSource(Paths1[4], 'stream'), love.audio.newSource(Paths1[5], 'stream')}
 
+    Controls = {'escape', 'numbers(1-9)', 'P', 'S', 'T, Y, U, I', 'N', 'Z', 'X', 'C'}
+    ControlsDesc = {': quit', ': play/pause song', ': pause all music', ': stop all music', ': music levels 1-4', ': set music level to none', ': increase volume', ': decrease volume', ': reset volume'}
+
     --TheSource 
     Level1 = true
     Level2 = false
     Level3 = false
     Level4 = false
+
+    ListControls = false
+
+    TestBool = false
+
+    DebugMode = true
+    DeCheck1 = false
+    DeCheck2 = false
 end
 
 
 
 function love.draw()
+    --draw credits
     love.graphics.print('Made by Nuclear Pasta', 320, 10)
+    --app icon check
     if not Success1 then
         love.graphics.print('Icon error', 20, 10)
     end
 
+    print(SystemOS, 620, 20)
+
+    if DebugMode then
+        if TestBool then
+            love.graphics.print('TestBool: true', 620, 10)
+        elseif not TestBool then
+            love.graphics.print('TestBool: false', 620, 10)
+        end
+    end
+
+
+    --draw show controls keybind
+    if not ListControls then
+        love.graphics.print('Press H to show controls', 320, 30)
+    elseif ListControls then
+        love.graphics.print('Press H to hide controls', 320, 30)
+    end
+
+
+    --music folder levels
     if Level1 and not Level2 and not Level3 and not Level4 then
         love.graphics.print('Currently on Level: 1', 20, 50)
     end
@@ -56,6 +101,13 @@ function love.draw()
     end
     --love.graphics.print('1: disc_cyberwave.ogg', 320, 40)
 
+    --list controls
+    if ListControls then
+        for i = 1, #Controls do
+            love.graphics.print(Controls[i] .. ControlsDesc[i], 550, 300 + i * 20)
+        end
+    end
+
     local touches = love.touch.getTouches()
 
     for i, id in ipairs(touches) do
@@ -74,6 +126,23 @@ function love.keypressed(k)
     elseif k == 'escape' and canQuit then
        love.event.quit()
     end
+
+
+    TestBool = Toggle(k, 'm', TestBool)
+
+    --[[if k == 'h' and not ListControls then
+        ListControls = true
+    elseif k == 'h' and ListControls then
+        ListControls = false
+    end]]
+
+    ListControls = Toggle(k, 'h', ListControls)
+    
+
+    --DeCheck1 = Toggle(k, ',', DeCheck1)
+    --DeCheck2 = Toggle(k, '.', DeCheck2)
+    --DebugMode = Toggle(k, ';', DebugMode)
+
 
     if Level1 and not Level2 and not Level3 and not Level4 then
         if k == '1' and not Musics1[1]:isPlaying() then
@@ -117,9 +186,9 @@ function love.keypressed(k)
     elseif k == 't' and Level1 then
         Level1 = false
 
-        Level2 = false
+        --[[Level2 = false
         Level3 = false
-        Level4 = false
+        Level4 = false]]
     end
 
     if k == 'y' and not Level2 then
@@ -131,9 +200,9 @@ function love.keypressed(k)
     elseif k == 'y' and Level2 then
         Level2 = false
 
-        Level1 = false
+        --[[Level1 = false
         Level3 = false
-        Level4 = false
+        Level4 = false]]
     end
 
     if k == 'u' and not Level3 then
@@ -145,9 +214,9 @@ function love.keypressed(k)
     elseif k == 'u' and Level3 then
         Level3 = false
 
-        Level2 = false
+        --[[Level2 = false
         Level1 = false
-        Level4 = false
+        Level4 = false]]
     end
 
     if k == 'i' and not Level4 then
@@ -156,13 +225,15 @@ function love.keypressed(k)
         Level2 = false
         Level3 = false
         Level1 = false
-    elseif k == 'o' and Level4 then
+    elseif k == 'i' and Level4 then
         Level4 = false
 
-        Level2 = false
+        --[[Level2 = false
         Level3 = false
-        Level1 = false
-    elseif k == 'n' and (Level1 or Level2 or Level3 or Level4) then
+        Level1 = false]]
+    end
+
+    if k == 'n' and (Level1 or Level2 or Level3 or Level4) then
         Level1 = false
         Level2 = false
         Level3 = false
