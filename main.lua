@@ -10,6 +10,11 @@ function Toggle(keyinput, key, bool) --keyinput: the key that's actually getting
 end
 
 function love.load()
+    --HEY LOOK AT THIS
+    --the command to launch this from the terminal is
+    -- open -n -a love "Collaboration"
+
+
     --init important stuff
     love.window.setTitle('Collaboration Music Player')
     local imageData = love.image.newImageData('Ligma.png')
